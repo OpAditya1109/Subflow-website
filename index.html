@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subflow – WhatsApp Subscription Reminders for Shopify</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --v:#7C5CFC;--v2:#9B7FFE;--vd:#5538E8;
+  --vdark:#0D0B1A;--vdark2:#13102B;--vcard:#1A163A;
+  --vborder:rgba(124,92,252,0.18);--vborderb:rgba(255,255,255,0.07);
+  --w:#FFFFFF;--wm:rgba(255,255,255,0.7);--wl:rgba(255,255,255,0.4);
+  --g:#10B981;--gl:rgba(16,185,129,0.12);
+  --nav:68px;--r:14px;--rl:22px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--vdark);color:var(--w);line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{line-height:1.15;letter-spacing:-0.03em}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--vdark)}
+::-webkit-scrollbar-thumb{background:var(--vborder);border-radius:3px}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav);display:flex;align-items:center;padding:0 clamp(20px,5vw,80px);background:rgba(13,11,26,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--vborderb)}
+.logo{font-size:20px;font-weight:800;background:linear-gradient(135deg,#fff 30%,var(--v2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;margin-right:auto;letter-spacing:-0.5px;cursor:pointer}
+.nav-links{display:flex;gap:8px;align-items:center}
+.nav-links a{text-decoration:none;color:var(--wm);font-size:14px;font-weight:500;padding:7px 14px;border-radius:8px;cursor:pointer;transition:color .15s,background .15s}
+.nav-links a:hover,.nav-links a.active{color:var(--w);background:rgba(255,255,255,0.07)}
+.nav-cta{background:var(--v)!important;color:var(--w)!important;font-weight:600!important;padding:8px 18px!important;border-radius:9px!important;box-shadow:0 0 20px rgba(124,92,252,0.35)!important}
+.nav-cta:hover{background:var(--vd)!important}
+
+.page{display:none;padding-top:var(--nav);min-height:100vh}
+.page.active{display:block}
+
+.chip{display:inline-flex;align-items:center;gap:7px;background:rgba(124,92,252,0.15);border:1px solid rgba(124,92,252,0.3);color:var(--v2);font-size:12px;font-weight:600;padding:5px 14px;border-radius:100px;letter-spacing:0.3px}
+.chip .dot{width:6px;height:6px;background:var(--v2);border-radius:50%;flex-shrink:0}
+.section-tag{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--v2);margin-bottom:14px;display:block}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;padding:13px 26px;border-radius:11px;cursor:pointer;border:none;text-decoration:none;transition:transform .12s,box-shadow .12s,background .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn-purple{background:var(--v);color:#fff;box-shadow:0 4px 20px rgba(124,92,252,0.4)}
+.btn-purple:hover{background:var(--vd);box-shadow:0 6px 28px rgba(124,92,252,0.5)}
+.btn-ghost{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:var(--w)}
+.btn-ghost:hover{background:rgba(255,255,255,0.12)}
+.btn-white{background:#fff;color:var(--vdark);font-weight:700}
+.btn-white:hover{background:rgba(255,255,255,0.92)}
+
+/* HERO */
+.hero-wrap{position:relative;overflow:hidden;padding:96px clamp(20px,5vw,80px) 80px;min-height:92vh;display:flex;align-items:center}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
+.orb-1{width:600px;height:600px;background:rgba(124,92,252,0.18);top:-200px;right:-100px}
+.orb-2{width:400px;height:400px;background:rgba(16,185,129,0.08);bottom:-100px;left:-100px}
+.hero-grid{position:relative;z-index:1;max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.hero-left .chip{margin-bottom:28px}
+.hero-left h1{font-size:clamp(38px,4.8vw,62px);font-weight:800;margin-bottom:22px;background:linear-gradient(160deg,#fff 50%,rgba(255,255,255,0.55));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-left h1 em{font-style:normal;background:linear-gradient(135deg,var(--v2),#C084FC);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-left p{font-size:18px;color:var(--wm);margin-bottom:36px;line-height:1.7;max-width:460px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px}
+.hero-social{display:flex;align-items:center;gap:14px}
+.avatar-stack{display:flex}
+.av{width:32px;height:32px;border-radius:50%;border:2px solid var(--vdark);background:linear-gradient(135deg,var(--v),var(--v2));margin-left:-8px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;color:#fff}
+.av:first-child{margin-left:0}
+.hero-social p{font-size:13px;color:var(--wm)}
+.hero-social strong{color:var(--w)}
+
+/* PHONE */
+.phone-wrap{position:relative;display:flex;justify-content:center;align-items:center}
+.phone-glow{position:absolute;width:340px;height:340px;background:radial-gradient(circle,rgba(124,92,252,0.25) 0%,transparent 70%);border-radius:50%}
+.phone{position:relative;z-index:1;width:280px;background:#1C1828;border-radius:40px;border:1px solid rgba(255,255,255,0.1);padding:16px 14px 28px;box-shadow:0 40px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.05)}
+.phone-notch{width:90px;height:28px;background:#0D0B1A;border-radius:14px;margin:0 auto 20px}
+.phone-bar{display:flex;align-items:center;gap:8px;background:#075E54;border-radius:14px 14px 4px 4px;padding:10px 14px;margin-bottom:2px}
+.wa-icon{width:32px;height:32px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.phone-bar-text p{font-size:12px;font-weight:600;color:#fff;line-height:1.2}
+.phone-bar-text span{font-size:10px;color:rgba(255,255,255,0.6)}
+.msg-area{background:#0B1418;border-radius:4px 4px 14px 14px;padding:14px 10px 10px;min-height:220px}
+.msg-bubble{background:#1F2C34;border-radius:0 12px 12px 12px;padding:10px 12px;font-size:12px;line-height:1.6;color:rgba(255,255,255,0.85);margin-bottom:10px;max-width:90%}
+.msg-bubble strong{color:#fff;font-weight:600}
+.msg-time{font-size:10px;color:rgba(255,255,255,0.3);text-align:right;margin-top:4px}
+.msg-btns{display:flex;gap:6px;margin-top:6px}
+.msg-btns a{display:block;background:#2A475E;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 14px;font-size:11px;font-weight:600;color:#5BC8F5;text-decoration:none;flex:1;text-align:center}
+.float-card{position:absolute;background:var(--vcard);border:1px solid var(--vborder);border-radius:14px;padding:12px 16px;box-shadow:0 16px 40px rgba(0,0,0,0.4)}
+.fc-right{right:-60px;top:40px}
+.fc-left{left:-60px;bottom:80px}
+.fc-stat{font-size:22px;font-weight:800;color:var(--v2);line-height:1}
+.fc-lbl{font-size:11px;color:var(--wl);margin-top:3px;white-space:nowrap}
+.fc-green{color:var(--g)!important}
+
+/* LOGOS */
+.logos-strip{padding:36px clamp(20px,5vw,80px);border-top:1px solid var(--vborderb);border-bottom:1px solid var(--vborderb)}
+.logos-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.logos-inner>p{font-size:13px;color:var(--wl);white-space:nowrap}
+.logo-pill{display:flex;align-items:center;gap:8px;color:var(--wl);font-size:13px;font-weight:600;padding:8px 18px;border:1px solid var(--vborderb);border-radius:100px}
+
+/* FEATURES */
+.feat-sec{padding:100px clamp(20px,5vw,80px);max-width:1200px;margin:0 auto}
+.feat-head{text-align:center;margin-bottom:64px}
+.feat-head h2{font-size:clamp(30px,3.5vw,46px);font-weight:800;margin-bottom:12px}
+.feat-head p{font-size:17px;color:var(--wm);max-width:500px;margin:0 auto}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.feat-card{background:var(--vcard);border:1px solid var(--vborder);border-radius:var(--rl);padding:32px;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
+.feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(124,92,252,0.5),transparent)}
+.feat-card:hover{border-color:rgba(124,92,252,0.45);transform:translateY(-3px)}
+.feat-icon{width:52px;height:52px;border-radius:14px;background:rgba(124,92,252,0.15);border:1px solid rgba(124,92,252,0.25);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px}
+.feat-card h3{font-size:17px;font-weight:700;margin-bottom:10px}
+.feat-card p{font-size:14px;color:var(--wm);line-height:1.7}
+
+/* WIDE FEATURE */
+.wide-feat{max-width:1200px;margin:0 auto 100px;padding:0 clamp(20px,5vw,80px);display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.wide-feat.flip{direction:rtl}
+.wide-feat.flip>*{direction:ltr}
+.wf-visual{background:var(--vcard);border:1px solid var(--vborder);border-radius:var(--rl);padding:28px;position:relative;overflow:hidden}
+.wf-visual::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(124,92,252,0.12),transparent 60%);pointer-events:none}
+.wf-text h2{font-size:clamp(26px,2.8vw,38px);font-weight:800;margin-bottom:16px}
+.wf-text p{font-size:16px;color:var(--wm);margin-bottom:28px;line-height:1.75}
+.check-list{list-style:none;display:flex;flex-direction:column;gap:12px}
+.check-list li{display:flex;align-items:flex-start;gap:10px;font-size:15px;color:var(--wm)}
+.check-list li::before{content:'✓';width:20px;height:20px;border-radius:50%;background:var(--gl);color:var(--g);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px}
+
+/* DASHBOARD */
+.dash{font-size:13px}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--vborderb)}
+.dash-title{font-weight:700;font-size:14px}
+.badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600}
+.badge-g{background:var(--gl);color:var(--g)}
+.badge-v{background:rgba(124,92,252,0.15);color:var(--v2)}
+.dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.ds{background:rgba(255,255,255,0.04);border:1px solid var(--vborderb);border-radius:10px;padding:12px}
+.ds-val{font-size:20px;font-weight:800;color:var(--w)}
+.ds-lbl{font-size:11px;color:var(--wl);margin-top:2px}
+.sub-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px}
+.sub-row:last-child{border-bottom:none}
+.sub-name{font-weight:600;color:var(--w);margin-bottom:2px}
+.sub-prod{color:var(--wl)}
+
+/* FLOW */
+.flow{display:flex;flex-direction:column}
+.flow-step{display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.flow-step:last-child{border-bottom:none}
+.flow-n{width:30px;height:30px;border-radius:50%;background:rgba(124,92,252,0.2);border:1px solid rgba(124,92,252,0.4);color:var(--v2);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.flow-step h4{font-size:14px;font-weight:600;margin-bottom:4px}
+.flow-step p{font-size:13px;color:var(--wm);line-height:1.6}
+
+/* HOW */
+.how-sec{padding:100px clamp(20px,5vw,80px);background:linear-gradient(180deg,transparent,rgba(124,92,252,0.05),transparent)}
+.how-inner{max-width:900px;margin:0 auto;text-align:center}
+.how-inner h2{font-size:clamp(28px,3.2vw,42px);font-weight:800;margin-bottom:12px}
+.how-inner>p{font-size:17px;color:var(--wm);margin-bottom:64px}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;text-align:left}
+.steps-grid::before{content:'';position:absolute;top:28px;left:12.5%;right:12.5%;height:1px;background:linear-gradient(90deg,transparent,var(--vborder),var(--vborder),transparent)}
+.step-item{padding:0 16px}
+.step-n{width:56px;height:56px;border-radius:50%;background:var(--vcard);border:2px solid var(--vborder);color:var(--v2);font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:20px;position:relative;z-index:1}
+.step-item h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.step-item p{font-size:13px;color:var(--wm);line-height:1.65}
+
+/* PRICING */
+.pricing-sec{padding:100px clamp(20px,5vw,80px);max-width:1200px;margin:0 auto}
+.pricing-head{text-align:center;margin-bottom:56px}
+.pricing-head h2{font-size:clamp(28px,3.2vw,42px);font-weight:800;margin-bottom:12px}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:960px;margin:0 auto}
+.plan{background:var(--vcard);border:1px solid var(--vborder);border-radius:var(--rl);padding:32px;position:relative}
+.plan.feat{border-color:var(--v);background:linear-gradient(160deg,rgba(124,92,252,0.12),var(--vcard));box-shadow:0 0 0 1px rgba(124,92,252,0.2),0 20px 60px rgba(124,92,252,0.15)}
+.plan-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--v);color:#fff;font-size:11px;font-weight:700;padding:4px 16px;border-radius:100px;white-space:nowrap;letter-spacing:0.3px}
+.plan-name{font-size:13px;font-weight:700;color:var(--wm);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.plan-price{font-size:44px;font-weight:800;letter-spacing:-2px;color:var(--w);line-height:1;margin-bottom:6px}
+.plan-price sup{font-size:22px;vertical-align:top;margin-top:8px;display:inline-block;letter-spacing:0}
+.plan-price span{font-size:15px;font-weight:400;color:var(--wl);letter-spacing:0}
+.plan-desc{font-size:14px;color:var(--wm);margin:12px 0 24px;line-height:1.55}
+.plan hr{border:none;border-top:1px solid var(--vborderb);margin-bottom:20px}
+.plan-list{list-style:none;display:flex;flex-direction:column;gap:11px;margin-bottom:28px}
+.plan-list li{font-size:13px;color:var(--wm);display:flex;align-items:flex-start;gap:9px}
+.plan-list li::before{content:'✓';color:var(--g);font-weight:700;font-size:11px;flex-shrink:0;margin-top:2px}
+.plan-btn{display:block;width:100%;text-align:center;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif;transition:background .15s,transform .1s}
+.plan-btn:hover{transform:translateY(-1px)}
+.pb-fill{background:var(--v);color:#fff;box-shadow:0 4px 16px rgba(124,92,252,0.35)}
+.pb-fill:hover{background:var(--vd)}
+.pb-out{background:rgba(255,255,255,0.06);color:var(--w);border:1px solid var(--vborderb)}
+.pb-out:hover{background:rgba(255,255,255,0.1)}
+
+/* CTA */
+.cta-banner{margin:0 clamp(20px,4vw,60px) 100px;border-radius:var(--rl);background:linear-gradient(135deg,#4F35C2 0%,#7C5CFC 50%,#9B7FFE 100%);padding:72px 60px;text-align:center;position:relative;overflow:hidden}
+.cta-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,0.12),transparent 60%)}
+.cta-banner h2{font-size:clamp(26px,3vw,40px);font-weight:800;margin-bottom:12px;position:relative}
+.cta-banner p{font-size:17px;color:rgba(255,255,255,0.8);margin-bottom:28px;position:relative}
+.cta-banner .btn{position:relative}
+
+/* INNER */
+.inner-hero{padding:72px clamp(20px,5vw,80px) 60px;border-bottom:1px solid var(--vborderb);position:relative;overflow:hidden}
+.inner-hero::before{content:'';position:absolute;top:-200px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,252,0.1),transparent 70%);pointer-events:none}
+.ih-inner{max-width:760px;position:relative;z-index:1}
+.ih-inner .chip{margin-bottom:20px}
+.ih-inner h1{font-size:clamp(30px,3.8vw,48px);font-weight:800;margin-bottom:12px}
+.ih-inner p{font-size:16px;color:var(--wm)}
+.prose{max-width:760px;padding:56px clamp(20px,5vw,80px) 90px}
+.prose h2{font-size:20px;font-weight:700;color:var(--w);margin:44px 0 12px;padding-bottom:10px;border-bottom:1px solid var(--vborderb)}
+.prose h3{font-size:16px;font-weight:600;color:var(--w);margin:28px 0 8px}
+.prose p{font-size:15px;color:var(--wm);margin-bottom:16px;line-height:1.8}
+.prose ul{padding-left:0;margin-bottom:16px;list-style:none;display:flex;flex-direction:column;gap:8px}
+.prose ul li{font-size:15px;color:var(--wm);display:flex;align-items:flex-start;gap:10px;line-height:1.7}
+.prose ul li::before{content:'→';color:var(--v2);font-weight:600;flex-shrink:0}
+.prose strong{color:var(--w);font-weight:600}
+.callout{background:rgba(124,92,252,0.08);border:1px solid rgba(124,92,252,0.2);border-radius:12px;padding:18px 22px;margin:24px 0}
+.callout p{color:var(--v2)!important;margin:0!important;font-size:14px!important}
+
+/* CONTACT */
+.contact-wrap{max-width:1100px;margin:0 auto;padding:64px clamp(20px,5vw,80px) 90px;display:grid;grid-template-columns:1fr 1.3fr;gap:5rem;align-items:start}
+.ci h2{font-size:26px;font-weight:800;margin-bottom:10px}
+.ci p{font-size:15px;color:var(--wm);margin-bottom:36px}
+.ci-item{display:flex;gap:14px;align-items:flex-start;margin-bottom:22px}
+.ci-ic{width:42px;height:42px;border-radius:12px;background:rgba(124,92,252,0.12);border:1px solid rgba(124,92,252,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ci-txt strong{display:block;font-size:13px;font-weight:700;color:var(--w);margin-bottom:2px}
+.ci-txt span{font-size:13px;color:var(--wm)}
+.cf{background:var(--vcard);border:1px solid var(--vborder);border-radius:var(--rl);padding:36px}
+.cf h3{font-size:18px;font-weight:700;margin-bottom:24px}
+.fg{margin-bottom:18px}
+.fg label{display:block;font-size:12px;font-weight:700;color:var(--wm);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px}
+.fg input,.fg select,.fg textarea{width:100%;padding:11px 15px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--w);outline:none;transition:border-color .15s}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--wl)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--v)}
+.fg select option{background:#13102B;color:#fff}
+.fg textarea{resize:vertical;min-height:110px;line-height:1.6}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.success-box{display:none;background:var(--gl);border:1px solid rgba(16,185,129,0.2);border-radius:10px;padding:14px 18px;text-align:center;color:var(--g);font-size:14px;font-weight:600;margin-top:14px}
+
+/* FOOTER */
+footer{background:var(--vdark2);border-top:1px solid var(--vborderb);padding:60px clamp(20px,5vw,80px) 36px}
+.ft-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:48px;border-bottom:1px solid var(--vborderb)}
+.ft-brand .logo-f{font-size:20px;font-weight:800;background:linear-gradient(135deg,#fff,var(--v2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;margin-bottom:12px;cursor:pointer}
+.ft-brand p{font-size:14px;color:var(--wl);line-height:1.7;max-width:230px}
+.ft-col h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--wl);margin-bottom:16px}
+.ft-col a{display:block;color:rgba(255,255,255,0.45);font-size:13px;text-decoration:none;margin-bottom:10px;cursor:pointer;transition:color .15s}
+.ft-col a:hover{color:var(--w)}
+.ft-bottom{max-width:1200px;margin:0 auto;padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.ft-bottom p{font-size:13px;color:var(--wl)}
+.ft-bottom a{color:rgba(255,255,255,0.35);font-size:13px;text-decoration:none;cursor:pointer;transition:color .15s}
+.ft-bottom a:hover{color:var(--w)}
+
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr;gap:2.5rem}
+  .phone-wrap{order:-1}
+  .fc-right,.fc-left{display:none}
+  .feat-grid{grid-template-columns:1fr 1fr}
+  .wide-feat{grid-template-columns:1fr;gap:2.5rem}
+  .wide-feat.flip{direction:ltr}
+  .steps-grid{grid-template-columns:1fr 1fr;gap:2rem}
+  .steps-grid::before{display:none}
+  .plans{grid-template-columns:1fr}
+  .contact-wrap{grid-template-columns:1fr}
+  .ft-grid{grid-template-columns:1fr 1fr;gap:2rem}
+}
+@media(max-width:600px){
+  .feat-grid{grid-template-columns:1fr}
+  .nav-hide-sm{display:none}
+  .cta-banner{padding:48px 28px}
+  .fg-row{grid-template-columns:1fr}
+}
+
+/* CATEGORY SECTION */
+.cat-sec{padding:80px clamp(20px,5vw,80px);max-width:1200px;margin:0 auto}
+.cat-head{text-align:center;margin-bottom:48px}
+.cat-head h2{font-size:clamp(26px,3vw,40px);font-weight:800;margin-bottom:12px}
+.cat-head p{font-size:16px;color:var(--wm);max-width:500px;margin:0 auto}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.cat-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.cat-grid{grid-template-columns:1fr}}
+.cat-card{background:var(--vcard);border:1px solid var(--vborder);border-radius:var(--rl);padding:24px;cursor:default;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
+.cat-card:hover{border-color:rgba(124,92,252,0.45);transform:translateY(-3px)}
+.cat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--vborder),transparent)}
+.cat-emoji{font-size:32px;margin-bottom:14px;display:block}
+.cat-card h3{font-size:15px;font-weight:700;color:var(--w);margin-bottom:8px}
+.cat-card p{font-size:13px;color:var(--wm);line-height:1.65;margin-bottom:14px}
+.cat-tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--v2);background:rgba(124,92,252,0.1);border:1px solid rgba(124,92,252,0.2);padding:3px 10px;border-radius:100px}
+.cat-not{padding:28px;background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1);border-radius:var(--rl);text-align:center;margin-top:20px}
+.cat-not p{font-size:14px;color:var(--wl);margin-bottom:0}
+.cat-not strong{color:var(--w)}
+.pain-sec{padding:100px clamp(20px,5vw,80px);background:linear-gradient(180deg,transparent,rgba(124,92,252,0.04),transparent);position:relative;overflow:hidden}
+.pain-sec::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(124,92,252,0.07),transparent 65%);pointer-events:none;border-radius:50%}
+.pain-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.pain-head{text-align:center;margin-bottom:64px}
+.pain-head h2{font-size:clamp(28px,3.4vw,44px);font-weight:800;margin-bottom:14px}
+.pain-head p{font-size:17px;color:var(--wm);max-width:560px;margin:0 auto;line-height:1.7}
+
+/* toggle styles removed — always-visible layout used instead */
+
+/* STAT CARDS ROW */
+.loss-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:48px}
+@media(max-width:900px){.loss-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.loss-grid{grid-template-columns:1fr}}
+.loss-card{background:var(--vcard);border:1px solid var(--vborder);border-radius:var(--rl);padding:28px 24px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s}
+.loss-card:hover{transform:translateY(-3px);border-color:rgba(124,92,252,0.45)}
+.loss-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0}
+.loss-card.red::before{background:linear-gradient(90deg,#FF4D4D,#FF8080)}
+.loss-card.green::before{background:linear-gradient(90deg,var(--g),#34D399)}
+.lc-icon{font-size:26px;margin-bottom:14px}
+.lc-val{font-size:32px;font-weight:800;line-height:1;margin-bottom:6px;letter-spacing:-1px}
+.loss-card.red .lc-val{color:#FF6B6B}
+.loss-card.green .lc-val{color:var(--g)}
+.lc-label{font-size:13px;font-weight:700;color:var(--w);margin-bottom:6px}
+.lc-desc{font-size:12px;color:var(--wl);line-height:1.6}
+
+/* COMPARISON TABLE */
+.compare-wrap{background:var(--vcard);border:1px solid var(--vborder);border-radius:var(--rl);overflow:hidden;margin-bottom:48px}
+.compare-row{display:grid;grid-template-columns:1.8fr 1fr 1fr;border-bottom:1px solid var(--vborderb)}
+.compare-row:last-child{border-bottom:none}
+.compare-row.head{background:rgba(124,92,252,0.1)}
+.cr-cell{padding:14px 20px;font-size:13px;display:flex;align-items:center;gap:8px}
+.cr-cell:not(:first-child){justify-content:center;text-align:center}
+.compare-row.head .cr-cell{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--wl)}
+.cr-metric{font-weight:600;color:var(--w);font-size:13px}
+.cr-bad{color:#FF6B6B;font-weight:700}
+.cr-good{color:var(--g);font-weight:700}
+.cr-icon{font-size:14px}
+
+/* STORY CALLOUT */
+.founder-callout{background:linear-gradient(135deg,rgba(124,92,252,0.1),rgba(16,185,129,0.06));border:1px solid rgba(124,92,252,0.25);border-radius:var(--rl);padding:36px 40px;display:flex;gap:28px;align-items:flex-start}
+@media(max-width:700px){.founder-callout{flex-direction:column;gap:18px;padding:28px 22px}}
+.fc-quote-icon{font-size:40px;line-height:1;flex-shrink:0;margin-top:-4px}
+.fc-quote-text p{font-size:16px;color:var(--wm);line-height:1.8;margin-bottom:14px;font-style:italic}
+.fc-quote-text p strong{color:var(--w);font-style:normal}
+.fc-founder{display:flex;align-items:center;gap:10px}
+.fc-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.fc-name{font-size:13px;font-weight:700;color:var(--w)}
+.fc-role{font-size:11px;color:var(--wl)}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="logo" onclick="showPage('home')">Subflow</span>
+  <div class="nav-links">
+    <a class="nav-hide-sm active" id="nav-home" onclick="showPage('home')">Home</a>
+    <a class="nav-hide-sm" onclick="showPage('home');setTimeout(function(){document.getElementById('why-needed').scrollIntoView({behavior:'smooth'})},100)">Why It's Needed</a>
+    <a class="nav-hide-sm" id="nav-privacy" onclick="showPage('privacy')">Privacy</a>
+    <a class="nav-hide-sm" id="nav-terms" onclick="showPage('terms')">Terms</a>
+    <a id="nav-contact" onclick="showPage('contact')">Contact</a>
+    <a class="nav-cta" href="#">Get Early Access →</a>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+
+  <section class="hero-wrap">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="hero-grid">
+      <div class="hero-left">
+        <div class="chip"><span class="dot"></span>Now Live — Early Access for Indian D2C Brands</div>
+        <h1>Stop losing subscribers<br>with <em>WhatsApp reminders</em></h1>
+        <p>Subflow tracks your Shopify subscriptions and automatically sends personalised WhatsApp renewal reminders before customers churn — in Hindi, English, or Hinglish.</p>
+        <div class="hero-btns">
+          <a href="#" class="btn btn-purple">Claim Founding Brand Slot — Free →</a>
+          <a href="#" class="btn btn-ghost">See how it works</a>
+        </div>
+        <div class="hero-social" style="flex-direction:column;align-items:flex-start;gap:10px">
+          <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(124,92,252,0.12);border:1px solid rgba(124,92,252,0.3);border-radius:10px;padding:8px 16px">
+            <span style="font-size:15px">🚀</span>
+            <span style="font-size:13px;font-weight:700;color:var(--v2)">Early Access — Now Live on Shopify</span>
+          </div>
+          <p style="font-size:13px;color:var(--wm);line-height:1.6">Be among the <strong style="color:var(--w)">first 20 founding brands</strong> to install free.<br>Shape the product. Lock in founder pricing forever.</p>
+        </div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone-glow"></div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-bar">
+            <div class="wa-icon">💬</div>
+            <div class="phone-bar-text">
+              <p>Your Brand on WhatsApp</p>
+              <span>Business Account · Verified</span>
+            </div>
+          </div>
+          <div class="msg-area">
+            <div class="msg-bubble">
+              Namaste Priya! 🙏<br><br>
+              Your <strong>Mango Protein Box</strong> renews in <strong>3 days</strong> — ₹1,299 will be charged on 22 June.<br><br>
+              Tap below to confirm or pause.
+              <div class="msg-btns">
+                <a href="#">✓ Confirm</a>
+                <a href="#">Pause</a>
+              </div>
+              <div class="msg-time">Delivered · 10:42 AM</div>
+            </div>
+          </div>
+        </div>
+        <div class="float-card fc-right">
+          <div class="fc-stat fc-green">94%</div>
+          <div class="fc-lbl">Renewal rate</div>
+        </div>
+        <div class="float-card fc-left">
+          <div class="fc-stat">3×</div>
+          <div class="fc-lbl">vs email open rate</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="logos-strip">
+    <div class="logos-inner">
+      <p>Works alongside</p>
+      <div class="logo-pill"><span>🟢</span> WhatsApp Business</div>
+      <div class="logo-pill"><span>🛒</span> Shopify</div>
+      <div class="logo-pill"><span>📘</span> Meta Business</div>
+      <div class="logo-pill"><span>📦</span> Any Indian D2C store</div>
+    </div>
+  </div>
+
+  <div class="feat-sec">
+    <div class="feat-head">
+      <span class="section-tag">What Subflow Does</span>
+      <h2>Four things. That's all it takes.</h2>
+      <p>No bloat, no learning curve — just the tools that move renewal rate.</p>
+    </div>
+    <div class="feat-grid" style="grid-template-columns:repeat(2,1fr)">
+      <div class="feat-card">
+        <div class="feat-icon">📲</div>
+        <h3>WhatsApp renewal reminders</h3>
+        <p>Auto-send personalised reminders 1, 3, or 7 days before renewal — with your customer's name, product, price, and date. 90%+ read rate vs 8% for email. Customers tap Confirm or Pause right in chat, no login needed.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🌐</div>
+        <h3>Hindi, Hinglish & English templates</h3>
+        <p>Pre-approved WhatsApp templates in all three — ready from day one, no Meta review delays. Your Tier 2 customers in UP, Bihar, Rajasthan get messages in the language they actually respond to.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⏸️</div>
+        <h3>Pause & skip — not just cancel</h3>
+        <p>Customers who want to cancel often just need a break. Give them a self-serve pause or skip in WhatsApp. Saves the subscription without you lifting a finger — and without an awkward support call.</p>
+      </div>
+      <div class="feat-card" style="border-color:rgba(16,185,129,0.25);background:linear-gradient(160deg,rgba(16,185,129,0.06),var(--vcard))">
+        <div class="feat-icon" style="background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.25)">🛡️</div>
+        <h3>Opt-in only. Max 2 msgs per renewal.</h3>
+        <p>Only messages customers who opted in at checkout. Hard cap of 2 messages per renewal cycle. One-tap STOP opt-out always available. Your brand's WhatsApp reputation stays clean — not flagged as spam.</p>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+  <!-- CATEGORY SECTION -->
+  <div class="cat-sec">
+    <div class="cat-head">
+      <span class="section-tag">Built For Your Category</span>
+      <h2>Is your product type right for Subflow?</h2>
+      <p>Subscriptions work differently across categories. Here's exactly how Subflow fits each one.</p>
+    </div>
+    <div class="cat-grid">
+
+      <div class="cat-card">
+        <span class="cat-emoji">💊</span>
+        <h3>Health & Nutrition Supplements</h3>
+        <p>Monthly protein, vitamins, greens, or immunity boxes. Customers forget to renew when a pack finishes — a 3-day WhatsApp reminder before the charge saves the subscription before they even notice it lapsed.</p>
+        <span class="cat-tag">✓ Monthly renewal cycle</span>
+      </div>
+
+      <div class="cat-card">
+        <span class="cat-emoji">✨</span>
+        <h3>Natural & Organic Skincare</h3>
+        <p>Serums, moisturisers, or beauty boxes on subscription. Indian skincare buyers are loyal but price-sensitive — the pause option keeps them when they're hesitating, instead of losing them to a competitor.</p>
+        <span class="cat-tag">✓ Pause instead of cancel</span>
+      </div>
+
+      <div class="cat-card">
+        <span class="cat-emoji">🐾</span>
+        <h3>Pet Food & Pet Care</h3>
+        <p>Monthly kibble, treats, or grooming boxes. Pet parents are your most loyal subscribers — they just need a nudge in Hinglish when renewal day is close. Low churn category with high lifetime value.</p>
+        <span class="cat-tag">✓ High LTV subscribers</span>
+      </div>
+
+      <div class="cat-card">
+        <span class="cat-emoji">☕</span>
+        <h3>Specialty Coffee & Tea</h3>
+        <p>Weekly or bi-weekly coffee drops, artisan tea subscriptions. Short renewal cycles mean more reminders needed. Subflow handles weekly cadence automatically — reminders go out without you touching anything.</p>
+        <span class="cat-tag">✓ Weekly renewal cycles</span>
+      </div>
+
+      <div class="cat-card">
+        <span class="cat-emoji">👶</span>
+        <h3>Baby & Kids Products</h3>
+        <p>Diapers, formula, activity kits, or baby food boxes. Parents are busy and genuinely relieved when they get a WhatsApp reminder before the charge — it feels like a service, not a sales message.</p>
+        <span class="cat-tag">✓ High-trust category</span>
+      </div>
+
+      <div class="cat-card">
+        <span class="cat-emoji">🧴</span>
+        <h3>Home & Personal Care</h3>
+        <p>Cleaning products, personal hygiene, or wellness packs on subscription. Often a second purchase for D2C brands. Reminder in Hindi at the right time keeps the habit going — and your MRR stable.</p>
+        <span class="cat-tag">✓ Habit-based retention</span>
+      </div>
+
+    </div>
+    <div class="cat-not">
+      <p>Selling something else on subscription? <strong>If your Shopify store sells any recurring product, Subflow works.</strong> These are just the categories where we see the biggest churn problem — and the fastest results.</p>
+    </div>
+  </div>
+
+  <section class="pricing-sec">
+    <div class="pricing-head">
+      <span class="section-tag">Pricing</span>
+      <h2>Simple pricing, no surprises</h2>
+      <p style="color:var(--wm)">Flat monthly plans — no per-transaction fees cutting into your margin.</p>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price"><sup>₹</sup>0<span>/mo</span></div>
+        <div class="plan-desc">For stores just getting started with subscriptions.</div>
+        <hr>
+        <ul class="plan-list">
+          <li>Up to 50 active subscriptions</li>
+          <li>Subscription tracking dashboard</li>
+          <li>100 WhatsApp reminders / month</li>
+          <li>English templates</li>
+          <li>Email support</li>
+        </ul>
+        <button class="plan-btn pb-out">Get started free</button>
+      </div>
+      <div class="plan feat">
+        <div class="plan-badge">Most popular</div>
+        <div class="plan-name">Growth</div>
+        <div class="plan-price"><sup>₹</sup>999<span>/mo</span></div>
+        <div class="plan-desc">For D2C brands actively scaling subscription revenue.</div>
+        <hr>
+        <ul class="plan-list">
+          <li>Unlimited active subscriptions</li>
+          <li>Unlimited WhatsApp reminders</li>
+          <li>Hindi & Hinglish templates</li>
+          <li>Pause & skip self-service portal</li>
+          <li>Churn analytics & reports</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="plan-btn pb-fill">Start 14-day free trial</button>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price" style="font-size:30px;letter-spacing:-0.5px">Custom</div>
+        <div class="plan-desc">For large brands needing custom integrations and SLAs.</div>
+        <hr>
+        <ul class="plan-list">
+          <li>Everything in Growth</li>
+          <li>Custom WhatsApp templates</li>
+          <li>Dedicated account manager</li>
+          <li>Custom reporting & webhooks</li>
+          <li>99.9% uptime SLA</li>
+        </ul>
+        <button class="plan-btn pb-out" onclick="showPage('contact')">Talk to us →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY THIS IS NEEDED: LOSS & GAIN SECTION -->
+  <section class="pain-sec" id="why-needed">
+    <div class="pain-inner">
+      <div class="pain-head">
+        <span class="section-tag">The Real Cost</span>
+        <h2>Every unreminded renewal is<br><span style="background:linear-gradient(135deg,#FF6B6B,#FF9A9A);-webkit-background-clip:text;-webkit-text-fill-color:transparent">silent revenue walking out the door</span></h2>
+        <p>Indian D2C brands lose 25-40% of subscription revenue every month — not because customers want to leave, but because <strong style="color:var(--w)">no one reminded them in time.</strong></p>
+      </div>
+
+      <!-- SPLIT: BEFORE LEFT / AFTER RIGHT — always visible, no toggle -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:48px">
+        <!-- BEFORE column -->
+        <div style="background:rgba(255,80,80,0.04);border:1px solid rgba(255,100,100,0.18);border-radius:var(--rl);padding:28px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FF4D4D,#FF8080);border-radius:3px 3px 0 0"></div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#FF6B6B;margin-bottom:20px">😟 Without Subflow</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+              <span style="font-size:13px;color:var(--wm)">Monthly churn rate</span>
+              <span style="font-size:18px;font-weight:800;color:#FF6B6B">30–40%</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+              <span style="font-size:13px;color:var(--wm)">Email open rate</span>
+              <span style="font-size:18px;font-weight:800;color:#FF6B6B">6–8%</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+              <span style="font-size:13px;color:var(--wm)">Revenue lost/mo (100 subs)</span>
+              <span style="font-size:18px;font-weight:800;color:#FF6B6B">₹2.4L</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+              <span style="font-size:13px;color:var(--wm)">Churn warning time</span>
+              <span style="font-size:13px;font-weight:700;color:#FF6B6B">None — too late</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+              <span style="font-size:13px;color:var(--wm)">Languages</span>
+              <span style="font-size:13px;font-weight:700;color:#FF6B6B">English only</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;color:var(--wm)">Manual follow-up time</span>
+              <span style="font-size:13px;font-weight:700;color:#FF6B6B">4–6 hrs/week</span>
+            </div>
+          </div>
+        </div>
+        <!-- AFTER column -->
+        <div style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.22);border-radius:var(--rl);padding:28px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--g),#34D399);border-radius:3px 3px 0 0"></div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--g);margin-bottom:20px">🚀 With Subflow <span style="font-size:10px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.25);border-radius:4px;padding:2px 7px;letter-spacing:0;text-transform:none;font-weight:600">Projected</span></div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+              <span style="font-size:13px;color:var(--wm)">Monthly churn rate</span>
+              <span style="font-size:18px;font-weight:800;color:var(--g)">6–12%</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+              <span style="font-size:13px;color:var(--wm)">WhatsApp read rate</span>
+              <span style="font-size:18px;font-weight:800;color:var(--g)">90–92%</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+              <span style="font-size:13px;color:var(--wm)">Revenue recovered/mo</span>
+              <span style="font-size:18px;font-weight:800;color:var(--g)">+₹1.8–2.4L</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+              <span style="font-size:13px;color:var(--wm)">Churn warning time</span>
+              <span style="font-size:13px;font-weight:700;color:var(--g)">7 days ahead</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+              <span style="font-size:13px;color:var(--wm)">Languages</span>
+              <span style="font-size:13px;font-weight:700;color:var(--g)">Hindi / Hinglish / EN</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;color:var(--wm)">Manual follow-up time</span>
+              <span style="font-size:13px;font-weight:700;color:var(--g)">Zero — fully auto</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--wl);text-align:center;margin-top:-32px;margin-bottom:48px;line-height:1.7">
+        Industry churn &amp; email figures based on published Indian D2C &amp; email marketing benchmarks (2023–24). WhatsApp read rate per Meta Business data. "With Subflow" column shows projected outcomes based on WhatsApp engagement benchmarks — we're early and will replace these with real data as founding brands go live.
+      </div>
+
+      <!-- FOUNDING BRANDS BLOCK -->
+        <div style="background:linear-gradient(135deg,rgba(124,92,252,0.1),rgba(16,185,129,0.06));border:1px solid rgba(124,92,252,0.25);border-radius:var(--rl);overflow:hidden">
+          <div style="padding:28px 32px;border-bottom:1px solid var(--vborderb);display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap">
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--v2);margin-bottom:10px">🚀 Early Access — Founding Brand Programme</div>
+              <div style="font-size:22px;font-weight:800;color:var(--w);letter-spacing:-0.5px;margin-bottom:6px">We just launched. No reviews yet — and that's the point.</div>
+              <div style="font-size:14px;color:var(--wm);line-height:1.7;max-width:560px">We're looking for <strong style="color:var(--w)">20 founding D2C brands</strong> who want to install free, give us real feedback, and help shape what Subflow becomes. In return — your logo on this page, direct access to the founder, and founding pricing locked forever.</div>
+            </div>
+            <a href="#" class="btn btn-purple" style="white-space:nowrap;flex-shrink:0">Apply as Founding Brand →</a>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0">
+            <div style="padding:22px 24px;border-right:1px solid var(--vborderb);display:flex;gap:12px;align-items:flex-start">
+              <span style="font-size:22px;flex-shrink:0">🎯</span>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:var(--w);margin-bottom:5px">Direct founder access</div>
+                <div style="font-size:12px;color:var(--wl);line-height:1.65">WhatsApp the founder directly. Your feedback goes straight into the product — not a support ticket queue.</div>
+              </div>
+            </div>
+            <div style="padding:22px 24px;border-right:1px solid var(--vborderb);display:flex;gap:12px;align-items:flex-start">
+              <span style="font-size:22px;flex-shrink:0">🔒</span>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:var(--w);margin-bottom:5px">Founding price, forever</div>
+                <div style="font-size:12px;color:var(--wl);line-height:1.65">First 20 brands lock in Growth plan at ₹499/mo — half price, grandfathered for life no matter what we charge later.</div>
+              </div>
+            </div>
+            <div style="padding:22px 24px;display:flex;gap:12px;align-items:flex-start">
+              <span style="font-size:22px;flex-shrink:0">🏅</span>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:var(--w);margin-bottom:5px">Founding brand badge</div>
+                <div style="font-size:12px;color:var(--wl);line-height:1.65">Your brand's name and category featured on this page once you're live. Be the proof that others trust.</div>
+              </div>
+            </div>
+          </div>
+          <!-- SLOTS COUNTER -->
+          <div style="padding:16px 32px;background:rgba(255,255,255,0.02);border-top:1px solid var(--vborderb);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+            <div style="font-size:13px;color:var(--wm)">Founding brand slots remaining:</div>
+            <div style="display:flex;gap:6px">
+              <span style="width:20px;height:20px;border-radius:50%;background:var(--v);border:2px solid rgba(124,92,252,0.5)"></span>
+              <span style="width:20px;height:20px;border-radius:50%;background:var(--v);border:2px solid rgba(124,92,252,0.5)"></span>
+              <span style="width:20px;height:20px;border-radius:50%;background:var(--v);border:2px solid rgba(124,92,252,0.5)"></span>
+              <span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.12)"></span>
+              <span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.12)"></span>
+              <span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.12)"></span>
+              <span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.12)"></span>
+              <span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.12)"></span>
+              <span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.12)"></span>
+              <span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.12)"></span>
+              <span style="font-size:12px;color:var(--wl);margin-left:4px;line-height:20px">3 taken · <strong style="color:var(--w)">17 left</strong></span>
+            </div>
+          </div>
+        </div>
+
+    </div>
+  </section>
+
+  <div class="cta-banner">
+    <h2>17 founding brand slots left</h2>
+    <p>Free to install. Lock in ₹499/mo forever. Shape the product from day one.</p>
+    <a href="#" class="btn btn-white">Claim Your Founding Brand Slot →</a>
+  </div>
+
+</div>
+
+<!-- PRIVACY -->
+<div id="page-privacy" class="page">
+  <div class="inner-hero">
+    <div class="ih-inner">
+      <div class="chip"><span class="dot"></span>Legal</div>
+      <h1>Privacy Policy</h1>
+      <p>Last updated: June 2025 · Operated by AdityaxInnovations, Pune, India.</p>
+    </div>
+  </div>
+  <div class="prose">
+    <div class="callout"><p>This policy explains how Subflow collects, uses, and protects your information. Plain English — no legalese where we can help it.</p></div>
+    <h2>1. Who we are</h2>
+    <p>Subflow is developed and operated by <strong>AdityaxInnovations</strong>, Pune, Maharashtra, India. Questions? Email <strong>privacy@subflow.app</strong>.</p>
+    <h2>2. What information we collect</h2>
+    <h3>2.1 Shopify store data</h3>
+    <p>When you install Subflow, we access the following from your store with your permission:</p>
+    <ul>
+      <li>Store name, URL, and owner contact details</li>
+      <li>Order data — IDs, line items, customer names, phone numbers, and emails — for tracking subscription renewals</li>
+      <li>Product and variant information to identify subscription-eligible products</li>
+      <li>Customer phone numbers, used solely to send WhatsApp renewal reminders</li>
+    </ul>
+    <h3>2.2 WhatsApp Business data</h3>
+    <p>If you connect your WhatsApp Business API account, we process message delivery receipts (sent, delivered, read) to show you engagement metrics. We do not store message content after delivery.</p>
+    <h3>2.3 App usage data</h3>
+    <p>We collect anonymised usage events to improve the product. This data is not linked to individual customers of your store.</p>
+    <h2>3. How we use your data</h2>
+    <ul>
+      <li>To operate Subflow's core subscription tracking features</li>
+      <li>To send WhatsApp renewal reminders on your behalf</li>
+      <li>To generate analytics visible only to you in your dashboard</li>
+      <li>To send product updates, billing notifications, and support communications</li>
+      <li>To comply with legal obligations</li>
+    </ul>
+    <p>We do not sell, rent, or share your data or your customers' data with third parties for marketing purposes.</p>
+    <h2>4. Data storage and security</h2>
+    <p>Data is stored on Render (render.com) and MongoDB Atlas, both maintaining industry-standard security. Data is encrypted in transit (TLS 1.2+) and at rest (AES-256). We retain data for as long as your account is active, plus 30 days after you uninstall.</p>
+    <h2>5. Third-party services</h2>
+    <ul>
+      <li><strong>Shopify</strong> — store data access via the Shopify Admin API</li>
+      <li><strong>Meta (WhatsApp Business API)</strong> — message delivery for renewal reminders</li>
+      <li><strong>Render</strong> — cloud infrastructure and backend hosting</li>
+      <li><strong>MongoDB Atlas</strong> — database storage</li>
+    </ul>
+    <h2>6. Your customers' rights</h2>
+    <p>As a Subflow merchant, you are the data controller for your customers' personal information. You are responsible for ensuring your customers have consented to receiving WhatsApp messages from your brand before enabling Subflow's reminder features.</p>
+    <h2>7. Your rights</h2>
+    <p>You have the right to access, correct, or delete data we hold. Email <strong>privacy@subflow.app</strong> — we respond within 30 days.</p>
+    <h2>8. Changes to this policy</h2>
+    <p>We'll notify you of material changes via email or in-app notification at least 14 days before they take effect.</p>
+    <h2>9. Contact</h2>
+    <p><strong>privacy@subflow.app</strong> · AdityaxInnovations, Pune, Maharashtra, India.</p>
+  </div>
+</div>
+
+<!-- TERMS -->
+<div id="page-terms" class="page">
+  <div class="inner-hero">
+    <div class="ih-inner">
+      <div class="chip"><span class="dot"></span>Legal</div>
+      <h1>Terms & Conditions</h1>
+      <p>Last updated: June 2025 · These terms govern your use of the Subflow Shopify application.</p>
+    </div>
+  </div>
+  <div class="prose">
+    <div class="callout"><p>By installing Subflow from the Shopify App Store, you agree to these terms. Please read them before installing.</p></div>
+    <h2>1. Definitions</h2>
+    <p>"Subflow", "we", "us", or "our" refers to AdityaxInnovations, Pune, India. "You" or "merchant" refers to the Shopify store owner who installs Subflow. "App" refers to the Subflow application and all associated services.</p>
+    <h2>2. Eligibility</h2>
+    <p>You must have a valid, active Shopify store to use Subflow. By installing, you confirm you have authority to bind yourself or your business to these terms and that you are at least 18 years of age.</p>
+    <h2>3. Licence to use</h2>
+    <p>We grant you a limited, non-exclusive, non-transferable, revocable licence to use the App solely for your internal business operations in connection with your Shopify store. You may not sublicence, resell, or otherwise transfer this right.</p>
+    <h2>4. Acceptable use</h2>
+    <p>You agree not to:</p>
+    <ul>
+      <li>Use Subflow to send unsolicited commercial messages (spam) via WhatsApp or any other channel</li>
+      <li>Reverse-engineer, decompile, or attempt to derive the App's source code</li>
+      <li>Use the App in violation of applicable laws, including India's IT Act or WhatsApp Business Policy</li>
+      <li>Impersonate another person or entity</li>
+      <li>Interfere with or disrupt the App's integrity or performance</li>
+    </ul>
+    <h2>5. WhatsApp Business Policy compliance</h2>
+    <p>Your use of Subflow's WhatsApp features must comply with Meta's WhatsApp Business Policy. You are solely responsible for obtaining proper customer consent before sending WhatsApp messages through Subflow. We may disable WhatsApp features for accounts found to be in violation.</p>
+    <h2>6. Subscription and billing</h2>
+    <p>Subflow offers a free Starter plan and paid plans billed monthly through Shopify's billing system. Prices are in INR and include applicable taxes. You may cancel at any time; cancellation takes effect at end of the current billing period. No refunds for partial periods.</p>
+    <h2>7. Data and privacy</h2>
+    <p>Your use of the App is also governed by our Privacy Policy, incorporated herein by reference.</p>
+    <h2>8. Intellectual property</h2>
+    <p>All intellectual property in the App — software, UI designs, trademarks, and documentation — remains the exclusive property of AdityaxInnovations. These terms grant no rights to our IP other than the limited licence in Section 3.</p>
+    <h2>9. Disclaimer of warranties</h2>
+    <p>The App is provided "as is" and "as available" without warranties of any kind. We do not warrant that the App will be uninterrupted or error-free. Your use is at your sole risk.</p>
+    <h2>10. Limitation of liability</h2>
+    <p>To the maximum extent permitted by law, AdityaxInnovations shall not be liable for indirect, incidental, special, consequential, or punitive damages. Our total liability shall not exceed the amount you paid us in the three months preceding the claim.</p>
+    <h2>11. Indemnification</h2>
+    <p>You agree to indemnify and hold harmless AdityaxInnovations and its officers, directors, employees, and agents from any claims arising out of your use of the App or violation of these terms.</p>
+    <h2>12. Termination</h2>
+    <p>We may suspend or terminate access if we reasonably believe you have violated these terms. You may terminate by uninstalling the App. The licence in Section 3 ceases immediately upon termination.</p>
+    <h2>13. Governing law</h2>
+    <p>These terms are governed by the laws of India. Disputes shall be subject to the exclusive jurisdiction of courts in Pune, Maharashtra.</p>
+    <h2>14. Changes to these terms</h2>
+    <p>We'll provide at least 14 days' notice of material changes. Continued use after the effective date constitutes acceptance.</p>
+    <h2>15. Contact</h2>
+    <p><strong>legal@subflow.app</strong> · AdityaxInnovations, Pune, Maharashtra, India.</p>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div id="page-contact" class="page">
+  <div class="inner-hero">
+    <div class="ih-inner">
+      <div class="chip"><span class="dot"></span>Get in touch</div>
+      <h1>We'd love to hear from you</h1>
+      <p>Questions about the app, billing, partnerships, or anything else — we're here.</p>
+    </div>
+  </div>
+  <div class="contact-wrap">
+    <div class="ci">
+      <h2>Contact Subflow</h2>
+      <p>Small team based in Pune. Expect a reply within one business day.</p>
+      <div class="ci-item"><div class="ci-ic">📧</div><div class="ci-txt"><strong>General enquiries</strong><span>hello@subflow.app</span></div></div>
+      <div class="ci-item"><div class="ci-ic">🔧</div><div class="ci-txt"><strong>Technical support</strong><span>support@subflow.app</span></div></div>
+      <div class="ci-item"><div class="ci-ic">🤝</div><div class="ci-txt"><strong>Partnerships & enterprise</strong><span>partnerships@subflow.app</span></div></div>
+      <div class="ci-item"><div class="ci-ic">🔒</div><div class="ci-txt"><strong>Privacy & legal</strong><span>privacy@subflow.app</span></div></div>
+      <div class="ci-item"><div class="ci-ic">📍</div><div class="ci-txt"><strong>AdityaxInnovations</strong><span>Pune, Maharashtra, India</span></div></div>
+    </div>
+    <div class="cf">
+      <h3>Send us a message</h3>
+      <div class="fg-row">
+        <div class="fg"><label>First name</label><input type="text" placeholder="Rohit" id="cf-fname"></div>
+        <div class="fg"><label>Last name</label><input type="text" placeholder="Sharma"></div>
+      </div>
+      <div class="fg"><label>Work email</label><input type="email" placeholder="rohit@yourbrand.com" id="cf-email"></div>
+      <div class="fg"><label>Shopify store URL (optional)</label><input type="text" placeholder="yourbrand.myshopify.com"></div>
+      <div class="fg">
+        <label>Topic</label>
+        <select>
+          <option value="">Select a topic</option>
+          <option>General question</option>
+          <option>Technical support</option>
+          <option>Billing & plans</option>
+          <option>WhatsApp integration</option>
+          <option>Partnership enquiry</option>
+          <option>Enterprise / custom plan</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="fg"><label>Message</label><textarea id="cf-message" placeholder="Tell us what's on your mind…"></textarea></div>
+      <button class="btn btn-purple" style="width:100%;justify-content:center" onclick="submitForm()">Send message</button>
+      <div class="success-box" id="form-success">✓ Message received! We'll reply within one business day.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="ft-grid">
+    <div class="ft-brand">
+      <span class="logo-f" onclick="showPage('home')">Subflow</span>
+      <p>WhatsApp subscription reminders for Shopify — built for Indian D2C brands.</p>
+    </div>
+    <div class="ft-col">
+      <h4>Product</h4>
+      <a onclick="showPage('home')">Features</a>
+      <a onclick="showPage('home')">Pricing</a>
+      <a onclick="showPage('home')">How it works</a>
+    </div>
+    <div class="ft-col">
+      <h4>Company</h4>
+      <a onclick="showPage('contact')">Contact</a>
+      <a href="#">Blog</a>
+      <a href="#">Changelog</a>
+    </div>
+    <div class="ft-col">
+      <h4>Legal</h4>
+      <a onclick="showPage('privacy')">Privacy Policy</a>
+      <a onclick="showPage('terms')">Terms & Conditions</a>
+    </div>
+  </div>
+  <div class="ft-bottom">
+    <p>© 2025 AdityaxInnovations. All rights reserved.</p>
+    <div style="display:flex;gap:20px">
+      <a onclick="showPage('privacy')">Privacy</a>
+      <a onclick="showPage('terms')">Terms</a>
+      <a onclick="showPage('contact')">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function showPage(n){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('page-'+n).classList.add('active');
+  var el=document.getElementById('nav-'+n);
+  if(el)el.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function submitForm(){
+  var fn=document.getElementById('cf-fname').value.trim();
+  var em=document.getElementById('cf-email').value.trim();
+  var ms=document.getElementById('cf-message').value.trim();
+  if(!fn||!em||!ms){alert('Please fill in your name, email, and message.');return;}
+  document.getElementById('form-success').style.display='block';
+}
+</script>
+</body>
+</html>
