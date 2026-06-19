@@ -28,6 +28,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav);display:fl
 .nav-links{display:flex;gap:8px;align-items:center}
 .nav-links a{text-decoration:none;color:var(--wm);font-size:14px;font-weight:500;padding:7px 14px;border-radius:8px;cursor:pointer;transition:color .15s,background .15s}
 .nav-links a:hover,.nav-links a.active{color:var(--w);background:rgba(255,255,255,0.07)}
+.nav-highlight{background:rgba(37,211,102,0.14);color:#25D366!important;font-weight:600!important}
+.nav-highlight:hover{background:rgba(37,211,102,0.22)!important;color:#25D366!important}
 .nav-cta{background:var(--v)!important;color:var(--w)!important;font-weight:600!important;padding:8px 18px!important;border-radius:9px!important;box-shadow:0 0 20px rgba(124,92,252,0.35)!important}
 .nav-cta:hover{background:var(--vd)!important}
 
@@ -451,6 +453,7 @@ footer{background:#070707;border-top:1px solid rgba(255,255,255,0.06);padding:60
   <span class="logo" onclick="showPage('home')">Subflow</span>
   <div class="nav-links">
     <a class="nav-hide-sm active" id="nav-home" onclick="showPage('home')">Home</a>
+    <a class="nav-hide-sm nav-highlight" onclick="showPage('home');setTimeout(function(){document.getElementById('see-it-live').scrollIntoView({behavior:'smooth'})},100)">See It Live</a>
     <a class="nav-hide-sm" onclick="showPage('home');setTimeout(function(){document.getElementById('why-needed').scrollIntoView({behavior:'smooth'})},100)">Why It's Needed</a>
     <a class="nav-hide-sm" id="nav-privacy" onclick="showPage('privacy')">Privacy</a>
     <a class="nav-hide-sm" id="nav-terms" onclick="showPage('terms')">Terms</a>
@@ -542,28 +545,8 @@ footer{background:#070707;border-top:1px solid rgba(255,255,255,0.06);padding:60
     </div>
   </div>
 
-  <div class="feat-sec">
-    <div class="feat-head">
-      <span class="section-tag">What Subflow Does</span>
-      <h2>Four things. That's all it takes.</h2>
-      <p>No bloat, no learning curve — just the tools that move renewal rate.</p>
-    </div>
-    <div class="feat-grid" style="grid-template-columns:repeat(2,1fr)">
-      <div class="feat-card">
-        <div class="feat-icon">📲</div>
-        <h3>WhatsApp renewal reminders</h3>
-        <p>Auto-send personalised reminders before renewal — name, product, price, date. 90%+ read rate vs 8% for email. Customer taps Confirm or Pause, no login needed.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">⏸️</div>
-        <h3>Pause & skip — not just cancel</h3>
-        <p>Customers who want out often just need a break. Self-serve pause/skip on WhatsApp saves the subscription — and saves you an awkward support call.</p>
-      </div>
-    </div>
-  </div>
-
   <!-- STORY DEMO SECTION - 2 STEPS -->
-  <div class="story-sec">
+  <div class="story-sec" id="see-it-live">
     <div class="story-inner">
       <div class="story-head">
         <span class="section-tag">See It Live</span>
@@ -688,6 +671,31 @@ footer{background:#070707;border-top:1px solid rgba(255,255,255,0.06);padding:60
     </div>
   </div>
 
+  <div class="feat-sec">
+    <div class="feat-head">
+      <span class="section-tag">What Subflow Does</span>
+      <h2>Three things. That's all it takes.</h2>
+      <p>No bloat, no learning curve — just the tools that move renewal rate.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📲</div>
+        <h3>WhatsApp renewal reminders</h3>
+        <p>Auto-send personalised reminders before renewal — name, product, price, date. 90%+ read rate vs 8% for email. Customer taps Confirm or Pause, no login needed.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⏸️</div>
+        <h3>Pause & skip — not just cancel</h3>
+        <p>Customers who want out often just need a break. Self-serve pause/skip on WhatsApp saves the subscription — and saves you an awkward support call.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <h3>Renewal analytics dashboard</h3>
+        <p>See renewal rate, revenue saved, and at-risk subscribers at a glance — straight from your Shopify data, no spreadsheets or manual tracking required.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- WHY THIS IS NEEDED -->
   <section class="pain-sec" id="why-needed">
     <div class="pain-inner">
@@ -695,14 +703,6 @@ footer{background:#070707;border-top:1px solid rgba(255,255,255,0.06);padding:60
         <span class="section-tag">The Real Cost</span>
         <h2>Every unreminded renewal is<br><span style="background:linear-gradient(135deg,#FF6B6B,#FF9A9A);-webkit-background-clip:text;-webkit-text-fill-color:transparent">silent revenue walking out the door</span></h2>
         <p>Indian D2C brands lose 25-40% of subscription revenue every month — not because customers want to leave, but because <strong style="color:var(--w)">no one reminded them in time.</strong> WhatsApp reminders see 90%+ read rate vs 6-8% for email.</p>
-      </div>
-
-      <div style="background:linear-gradient(135deg,rgba(124,92,252,0.1),rgba(16,185,129,0.06));border:1px solid rgba(124,92,252,0.25);border-radius:var(--rl);padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
-        <div>
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--v2);margin-bottom:10px">🚀 Founding Brand Programme — 17 slots left</div>
-          <div style="font-size:14px;color:var(--wm);line-height:1.7;max-width:500px">Install free, give feedback, lock in ₹499/mo forever (half price, grandfathered for life).</div>
-        </div>
-        <a href="#" class="btn btn-purple" style="white-space:nowrap;flex-shrink:0">Apply as Founding Brand →</a>
       </div>
     </div>
   </section>
@@ -834,31 +834,6 @@ footer{background:#070707;border-top:1px solid rgba(255,255,255,0.06);padding:60
       <div class="ci-item"><div class="ci-ic">🔒</div><div class="ci-txt"><strong>Privacy & legal</strong><span>privacy@subflow.app</span></div></div>
       <div class="ci-item"><div class="ci-ic">📍</div><div class="ci-txt"><strong>AdityaxInnovations</strong><span>Pune, Maharashtra, India</span></div></div>
     </div>
-    <div class="cf">
-      <h3>Send us a message</h3>
-      <div class="fg-row">
-        <div class="fg"><label>First name</label><input type="text" placeholder="Rohit" id="cf-fname"></div>
-        <div class="fg"><label>Last name</label><input type="text" placeholder="Sharma"></div>
-      </div>
-      <div class="fg"><label>Work email</label><input type="email" placeholder="rohit@yourbrand.com" id="cf-email"></div>
-      <div class="fg"><label>Shopify store URL (optional)</label><input type="text" placeholder="yourbrand.myshopify.com"></div>
-      <div class="fg">
-        <label>Topic</label>
-        <select>
-          <option value="">Select a topic</option>
-          <option>General question</option>
-          <option>Technical support</option>
-          <option>Billing & plans</option>
-          <option>WhatsApp integration</option>
-          <option>Partnership enquiry</option>
-          <option>Enterprise / custom plan</option>
-          <option>Other</option>
-        </select>
-      </div>
-      <div class="fg"><label>Message</label><textarea id="cf-message" placeholder="Tell us what's on your mind…"></textarea></div>
-      <button class="btn btn-purple" style="width:100%;justify-content:center" onclick="submitForm()">Send message</button>
-      <div class="success-box" id="form-success">✓ Message received! We'll reply within one business day.</div>
-    </div>
   </div>
 </div>
 
@@ -904,14 +879,6 @@ function showPage(n){
   if(el)el.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
-function submitForm(){
-  var fn=document.getElementById('cf-fname').value.trim();
-  var em=document.getElementById('cf-email').value.trim();
-  var ms=document.getElementById('cf-message').value.trim();
-  if(!fn||!em||!ms){alert('Please fill in your name, email, and message.');return;}
-  document.getElementById('form-success').style.display='block';
-}
-
 // Story demo functions - Updated for 2 steps
 function storyNext(step){
   document.querySelectorAll('.sscreen').forEach(s=>s.classList.remove('active'));
